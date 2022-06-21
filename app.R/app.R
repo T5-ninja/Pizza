@@ -3,7 +3,7 @@
 # the 'Run App' button above.
 #
 # Find out more about building applications with Shiny here:
-#
+# hi
 #    http://shiny.rstudio.com/
 #
 remotes::install_github("RinteRface/shinyRPG")
