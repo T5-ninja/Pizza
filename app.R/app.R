@@ -8,6 +8,7 @@
 #
 install.packages("shinythemes")
 
+
 ## ui.R ##
 library(shiny)
 library(bslib)
@@ -15,15 +16,13 @@ library(shinythemes)
 
 shinyApp(
   ui = navbarPage("United",
-                  theme = shinythemes::shinytheme("united"),
+                  theme = shinythemes::shinytheme("united"),  # <--- Specify theme here
                   tabPanel("Plot", "Plot tab contents..."),
                   navbarMenu("More",
                              tabPanel("Summary", "Summary tab contents..."),
                              tabPanel("Table", "Table tab contents...")
                   )
   ),
+  server = function(input, output) { }
 )
-# server = function(input, output)
-# {
 
-# }
