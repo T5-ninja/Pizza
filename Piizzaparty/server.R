@@ -1,8 +1,7 @@
 library(shiny)
 
-
 # static model values - outside function, visible across all sessions
-
+#hi
 shroompizza_dist <- "Uniform~(10,15)"
 bacon_dist <- "Normal~(mu = 10, stddev= 2)"
 veg_dist <- "Normal ~ (mu= 8, stddev=3)"
