@@ -57,6 +57,7 @@ server <- function(input, output) {
   values$userfeedback <-
     "Costs and revenues currently balance exactly. Set your desired change in fare and mileage for each service next year and click the 'Simulate next year' button. Good luck!"
   values$bankrupt <- "no"
+#but for our pizza game even if bankrupt, users can play on
 
   # define company dataframe
 
@@ -378,24 +379,24 @@ server <- function(input, output) {
   # revenue plot
   output$revenue <- renderPlot({
     plot(
-      values$s1df$year,
+      values$s1df$day,
       values$s1df$revenue,
       type = 'o',
       xaxt = "n",
       ylim = c(0, max(
         values$s1df$revenue + values$s2df$revenue
       )),
-      xlim = c(0, max(values$s1df$year)),
-      xlab = "Year",
+      xlim = c(0, max(values$s1df$day)),
+      xlab = "Day",
       ylab = "Amount",
       main = "Revenue",
       col = '#4d4dff',
       lwd = 1,
       pch = 3
     )
-    axis(side = 1, at = c(0:max(values$s1df$year)))
+    axis(side = 1, at = c(0:max(values$s1df$day)))
     lines(
-      values$s1df$year,
+      values$s1df$day,
       values$s2df$revenue,
       type = "o",
       col = "#ff4d4d",
@@ -403,7 +404,7 @@ server <- function(input, output) {
       pch = 4
     )
     lines(
-      values$s1df$year,
+      values$s1df$day,
       (values$s1df$revenue + values$s2df$revenue),
       type = "o",
       col = "black",
