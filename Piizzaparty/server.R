@@ -3,42 +3,72 @@ library(shiny)
 
 # static model values - outside function, visible across all sessions
 
-s1_fare_elas <- -0.4
-s1_mile_elas <- 0.4
-s2_fare_elas <- -0.2
-s2_mile_elas <- 0.6
-passenger_loss_rate <- .01
-inflation_rate <- .01
-tax_rate <- 1
-interest_rate <- 0.05
-bankrupt_level <- -50
+shroompizza_dist <- "Uniform~(10,15)"
+bacon_dist <- "Normal~(mu = 10, stddev= 2)"
+veg_dist <- "Normal ~ (mu= 8, stddev=3)"
+chicken_dist <- "Uniform ~(15,20)"
 
+shroom_cs <- 7.5
+shroom_co <- 1.5
+bacon_cs <- 7.8
+bacon_co <- 3.2
+veg_cs <- 6.45
+veg_co <- 1.55
+chicken_cs <- 7.4
+chicken_co <- 3.6
 
+cheese_cost <- 0.5
+mushroom <- 0.15
+tomato <- 0.1
+bacon <- 1
+chicken <- 0.8
+
+initial_num_cheese <- 108
+initial_num_mushroom <- 39
+initial_num_tomato <- 129
+initial_num_bacon <- 23
+initial_num_chicken <- 55
+
+initial_cost_cheese <- 54
+initial_cost_mushroom <- 6
+initial_cost_tomato <- 13
+initial_cost_bacon <- 23
+initial_cost_chicken <- 44
+
+# initial_demand_vpizza <-
+
+# passenger_loss_rate <- .01
+# inflation_rate <- .01
+# tax_rate <- 1
+# interest_rate <- 0.05
+# bankrupt_level <- -50
+
+###########################
 server <- function(input, output) {
   # Define reactive values
-  
+
   values <- reactiveValues()
-  
+
   # company level reactive values
-  
-  values$year <- 0
-  values$id <- 1
-  values$unitcost <- 1
-  values$fixedcost <- 50
+
+  values$cheese <- initial_num_cheese
+  values$bacon<- initial_num_bacon
+  values$mushroom <- initial_num_mushroom
+  values$chicken<- initial_num_chicken
   values$userfeedback <-
     "Costs and revenues currently balance exactly. Set your desired change in fare and mileage for each service next year and click the 'Simulate next year' button. Good luck!"
   values$bankrupt <- "no"
-  
+
   # define company dataframe
-  
+
   values$cdf <- data.frame(
     id = as.integer(1),
-    year = as.integer(0),
-    total_revenue = 250,
+    day = as.integer(0),
+    total_revenue =208 ,
     fixed_costs = 50,
     unit_cost = 1,
     total_costs = 250,
-    interest_paid = 0,
+    # interest_paid = 0,
     gross_profit = 0,
     tax = 0,
     net_profit = 0,
@@ -48,10 +78,10 @@ server <- function(input, output) {
     balance = 0,
     stringsAsFactors = FALSE
   )
-  
-  
+
+
   # define service 1 dataframe
-  
+
   values$s1df <- data.frame(
     id = as.integer(1),
     year = as.integer(0),
@@ -63,10 +93,10 @@ server <- function(input, output) {
     variable_cost = 100,
     revenue = 150
   )
-  
-  
+
+
   # define service 2 dataframe
-  
+
   values$s2df <- data.frame(
     id = as.integer(1),
     year = as.integer(0),
@@ -78,29 +108,29 @@ server <- function(input, output) {
     variable_cost = 100,
     revenue = 100
   )
-  
-  
-  
+
+
+
   # observe event - respond to simulate button
   observeEvent(input$simulate, {
     if (input$simulate > 0 & values$bankrupt == "no") {
       # increase unit cost by inflation
-      values$unitcost <-
+      values$ <-
         (values$unitcost + (inflation_rate * values$unitcost))
-      
+
       # increase fixed cost by inflation
       values$fixedcost <-
         (values$fixedcost + (inflation_rate * values$fixedcost))
-      
-      # calculate service 1 values
-      
-      s1_prior_miles <- values$s1df$miles[values$id]
+
+      # calculate shop 1 values
+
+      s1_prior_revenue <- values$s1df$revenue[values$id]
       s1_prior_fare <- values$s1df$fare[values$id]
       s1_prior_passengers <- values$s1df$passengers[values$id]
       s1_prior_variable_cost <- values$s1df$variable_cost[values$id]
-      
-      s1_new_miles <-
-        s1_prior_miles * (1 + (input$s1_mileage_increase / 100))
+
+      s1_new_revenue <-
+        s1_prior_revenue * (1 + (input$s1_revenue_increase / 100))
       s1_new_fare <-
         s1_prior_fare * (1 + (input$s1_fare_increase / 100))
       s1_new_passengers <-
@@ -108,14 +138,14 @@ server <- function(input, output) {
                                                                                  s1_fare_elas) * ((s1_new_miles / s1_prior_miles) ^ s1_mile_elas)
       s1_new_variable_cost <- values$unitcost * s1_new_miles
       s1_revenue <- s1_new_fare * s1_new_passengers
-      
-      # calculate service 2 values
-      
+
+      # calculate shop 2 values
+
       s2_prior_miles <- values$s2df$miles[values$id]
       s2_prior_fare <- values$s2df$fare[values$id]
       s2_prior_passengers <- values$s2df$passengers[values$id]
       s2_prior_variable_cost <- values$s2df$variable_cost[values$id]
-      
+
       s2_new_miles <-
         s2_prior_miles * (1 + (input$s2_mileage_increase / 100))
       s2_new_fare <-
@@ -125,46 +155,46 @@ server <- function(input, output) {
                                                                                  s2_fare_elas) * ((s2_new_miles / s2_prior_miles) ^ s2_mile_elas)
       s2_new_variable_cost <- values$unitcost * s2_new_miles
       s2_revenue <- s2_new_fare * s2_new_passengers
-      
-      # calculate company values
-      
+
+      # calculate total values
+
       prior_interest_due <- values$cdf$interest_due[values$id]
       prior_tax_todate <- values$cdf$tax_todate[values$id]
       prior_interest_todate <- values$cdf$interest_todate[values$id]
       prior_balance <- values$cdf$balance[values$id]
-      
+
       revenue <- s1_revenue + s2_revenue
       cost <-
         s1_new_variable_cost + s2_new_variable_cost + values$fixedcost
       grprofit <- revenue - cost - prior_interest_due
-      
+
       if (grprofit > 10) {
         tax <- (grprofit - 10) * tax_rate
       } else {
         tax <- 0
       }
-      
+
       if (grprofit < 0) {
         new_interest_due <- abs(grprofit * interest_rate)
       } else {
         new_interest_due <- 0
       }
-      
+
       netprofit <- grprofit - tax
       new_tax_todate <- prior_tax_todate + tax
       new_interest_todate <-
         prior_interest_todate + prior_interest_due
       new_balance <- prior_balance + netprofit
-      
+
       # check for bankruptcy
-      
+
       if (new_balance < bankrupt_level) {
         values$bankrupt <- "yes"
       }
-      
-      
+
+
       # set user feedback strings
-      
+
       if (values$bankrupt == "yes") {
         values$userfeedback <-
           "You have gone BANKRUPT! Better luck next time ..."
@@ -173,25 +203,25 @@ server <- function(input, output) {
           values$userfeedback <-
             "You have made a LOSS this year! You will pay interest on borrowings next year."
         }
-        
+
         if (netprofit > 0 & tax == 0) {
           values$userfeedback <- "You have made a PROFIT this year!"
         }
-        
+
         if (netprofit > 0 & tax > 0) {
           values$userfeedback <-
             "You have made EXCESSIVE PROFITS this year and have been taxed!"
         }
       }
-      
-      
+
+
       # Increment id and year
       values$year = values$year + 1
       values$id = values$id + 1
-      
-      
+
+
       # Update dataframes
-      
+
       # Update s1 df
       newLine <- c(
         values$id,
@@ -207,7 +237,7 @@ server <- function(input, output) {
       values$s1df[nrow(values$s1df) + 1, ] <- newLine
       values$s1df$id <- as.integer(values$s1df$id)
       values$s1df$year <- as.integer(values$s1df$year)
-      
+
       # Update s2 df
       newLine <- c(
         values$id,
@@ -223,7 +253,7 @@ server <- function(input, output) {
       values$s2df[nrow(values$s2df) + 1, ] <- newLine
       values$s2df$id <- as.integer(values$s2df$id)
       values$s2df$year <- as.integer(values$s2df$year)
-      
+
       # Update company df
       newLine <- c(
         values$id,
@@ -244,15 +274,15 @@ server <- function(input, output) {
       values$cdf[nrow(values$cdf) + 1, ] <- newLine
       values$cdf$id <- as.integer(values$cdf$id)
       values$cdf$year <- as.integer(values$cdf$year)
-      
+
     }
   })
-  
-  
+
+
   # define outputs
-  
+
   # passengers plot
-  
+
   output$passengers <- renderPlot({
     plot(
       values$s1df$year,
@@ -296,9 +326,9 @@ server <- function(input, output) {
       pch = c(3, 4, 1),
       col = c("#4d4dff", "#ff4d4d", "black")
     )
-    
+
   })
-  
+
   # miles plot
   output$miles <- renderPlot({
     plot(
@@ -343,9 +373,9 @@ server <- function(input, output) {
       pch = c(3, 4, 1),
       col = c("#4d4dff", "#ff4d4d", "black")
     )
-    
+
   })
-  
+
   # revenue plot
   output$revenue <- renderPlot({
     plot(
@@ -390,10 +420,10 @@ server <- function(input, output) {
       pch = c(3, 4, 1),
       col = c("#4d4dff", "#ff4d4d", "black")
     )
-    
+
   })
-  
-  
+
+
   # costs plot
   output$costs <- renderPlot({
     plot(
@@ -436,10 +466,10 @@ server <- function(input, output) {
       pch = c(3, 4, 1),
       col = c("#4d4dff", "#ff4d4d", "black")
     )
-    
+
   })
-  
-  
+
+
   # net profit plot
   output$profit <- renderPlot({
     plot(
@@ -457,10 +487,10 @@ server <- function(input, output) {
       pch = 1
     )
     axis(side = 1, at = c(0:max(values$s1df$year)))
-    
+
   })
-  
-  
+
+
   # balance plot
   output$cbalance <- renderPlot({
     plot(
@@ -478,14 +508,14 @@ server <- function(input, output) {
       pch = 1
     )
     axis(side = 1, at = c(0:max(values$cdf$year)))
-    
+
   })
-  
+
   # Data table output and download function
-  
+
   output$c_data_out  <-
     renderTable(values$cdf[, c(2:14)], striped = TRUE, spacing = "xs")
-  
+
   output$downloadData <- downloadHandler(
     filename = function() {
       paste('dominobus', 'csv', sep = ".")
@@ -496,9 +526,9 @@ server <- function(input, output) {
                 row.names = FALSE)
     }
   )
-  
+
   # Dashboard output
-  
+
   output$year <- renderText(paste({
     values$year
   }))
@@ -525,14 +555,14 @@ server <- function(input, output) {
   output$feedback <- renderText(paste({
     values$userfeedback
   }))
-  
+
   # Note this is used with conditional panel to deactivate simulation button once bankrupt
   output$bankrupt <- renderText(paste({
     values$bankrupt
   }))
-  
-  
+
+
   # This line is needed as output$bankrupt is not shown on the app, to prevent it being suspended
   outputOptions(output, "bankrupt", suspendWhenHidden = FALSE)
-  
+
 }

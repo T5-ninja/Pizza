@@ -7,8 +7,8 @@ shinyApp(
   ui = fluidPage(responsive = FALSE,
 
                  fluidRow(style = "padding-bottom: 20px;"
-                           ,column(width=6,HTML("<h2>🍅</h2>"),
-                                   textOutput(var)
+                           ,column(width=6,
+                                   textOutput("clickCount1")
                            )
                            ,column(width=6,
                                    actionButton("button1", spizza ,style='height:170px'),
@@ -53,10 +53,10 @@ shinyApp(
 
   )
   ,server = function(input, output, session) {
-    decrease <- reactive({
-      if(input$decrease ==0)return ()
-    var <- var-1
-    output$var <- renderText({
+    # decrease <- reactive({
+    #   if(input$decrease ==0)return ()
+    # var <- var-1
+    output$clickCount1 <- renderText({
       input$button1
     })
     output$clickCount2 <- renderText({
@@ -74,3 +74,6 @@ shinyApp(
   }
   ,options = list(height = 500)
 )
+
+
+
