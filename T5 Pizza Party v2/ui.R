@@ -200,12 +200,12 @@ ui <- fluidPage(
                ),
       tabPanel("Factory", 
                h5("Summary financial data for the Domino Bus Group"),
-               # downloadButton('downloadData', 'Download Data', class="btn-xs btn-info"),
+               downloadButton('downloadData1', 'Download Data', class="btn-xs btn-info"),
                div(tableOutput("f_data_out"), style = "font-size:80%")
       ),
       tabPanel("Shop 1", 
                h5("Summary financial data for the Domino Bus Group"),
-               # downloadButton('downloadData', 'Download Data', class="btn-xs btn-info"),
+               downloadButton('downloadData2', 'Download Data', class="btn-xs btn-info"),
                div(tableOutput("s1_data_out"), style = "font-size:80%")
       ),
       

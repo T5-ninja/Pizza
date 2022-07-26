@@ -570,6 +570,26 @@ server <- function(input, output) {
                 row.names = FALSE)
     }
   )
+    output$downloadData1 <- downloadHandler(
+    filename = function() {
+      paste('pizzaparty_factory', 'csv', sep = ".")
+    },
+    content = function(file) {
+      # Write to a file specified by the 'file' argument
+      write.csv(values$fdf[,], file,
+                row.names = FALSE)
+    }
+  )
+  output$downloadData2 <- downloadHandler(
+    filename = function() {
+      paste('pizzaparty_shop1', 'csv', sep = ".")
+    },
+    content = function(file) {
+      # Write to a file specified by the 'file' argument
+      write.csv(values$s1df[,], file,
+                row.names = FALSE)
+    }
+  )
   
   # Dashboard output
   
